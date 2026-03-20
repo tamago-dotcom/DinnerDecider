@@ -90,8 +90,38 @@ def history():
     results = db.get_results_paginated(page=page, per_page=per_page)
     total = db.get_result_count()
     total_pages = (total + per_page - 1) // per_page
+    feedback_count = db.get_feedback_count()
     return render_template('history.html', results=results,
-                           page=page, total_pages=total_pages, total=total)
+                           page=page, total_pages=total_pages, total=total,
+                           feedback_count=feedback_count)
+
+
+@app.route('/api/feedback', methods=['POST'])
+def api_feedback():
+    data = request.get_json()
+    if not data:
+        return jsonify({'success': False, 'message': 'リクエストが不正です'})
+
+    result_id = data.get('result_id')
+    actual_food = data.get('actual_food', '').strip()
+    satisfaction = data.get('satisfaction')
+
+    if not actual_food:
+        return jsonify({'success': False, 'message': '食べた料理を入力してください'})
+    if satisfaction is None or not isinstance(satisfaction, int) or not (1 <= satisfaction <= 5):
+        return jsonify({'success': False, 'message': '満足度は1〜5の整数で入力してください'})
+
+    result_row = db.get_result(result_id)
+    if not result_row:
+        return jsonify({'success': False, 'message': '対応する診断結果が見つかりません'})
+
+    db.save_feedback(result_id, actual_food, satisfaction)
+    return jsonify({'success': True})
+
+
+@app.route('/api/feedback/count')
+def api_feedback_count():
+    return jsonify({'count': db.get_feedback_count()})
 
 
 @app.route('/api/retrain', methods=['POST'])
@@ -103,7 +133,8 @@ def api_retrain():
             'success': False,
             'message': f'再学習にはデータが50件必要です（現在 {count} 件）'
         })
-    result = model.retrain(training_data)
+    feedback_data = db.get_feedback_for_training()
+    result = model.retrain(training_data, feedback_data=feedback_data)
     acc = result.get('accuracy')
     acc_str = f'{acc:.1%}' if acc is not None else '不明'
     return jsonify({
