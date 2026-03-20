@@ -4,7 +4,8 @@ import os
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), 'model.pkl')
+_data_dir = os.path.dirname(os.environ.get('DATABASE_URL', os.path.join(os.path.dirname(__file__), 'dinner.db')))
+MODEL_PATH = os.path.join(_data_dir, 'model.pkl')
 
 CATEGORY_NAMES = ['ストレス', '疲労', '緊張', '活気', '社会性', '欲求', '混乱']
 

@@ -1,5 +1,6 @@
 import random
 import json
+import os
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 
 from database import Database
@@ -7,7 +8,7 @@ from ml_model import MLModel, GROUP_INFO, CATEGORY_NAMES
 from questions_data import QUESTIONS
 
 app = Flask(__name__)
-app.secret_key = 'dinner_decider_2024_secret'
+app.secret_key = os.environ.get('SECRET_KEY', 'dinner_decider_2024_secret')
 
 db = Database()
 model = MLModel()
@@ -152,4 +153,5 @@ def api_stats():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    debug = os.environ.get('FLASK_ENV') != 'production'
+    app.run(debug=debug, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

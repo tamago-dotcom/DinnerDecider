@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'dinner.db')
+DB_PATH = os.environ.get('DATABASE_URL', os.path.join(os.path.dirname(__file__), 'dinner.db'))
 
 
 def get_conn():
