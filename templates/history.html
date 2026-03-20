@@ -51,11 +51,11 @@
   </div>
   {% endif %}
 
-  <!-- Retrain section (shown when 50+ records) -->
-  {% if total >= 50 %}
+  <!-- Retrain section (shown when 50+ feedback records) -->
+  {% if feedback_count >= 50 %}
   <div class="retrain-section">
     <h3>🤖 AIモデルの再学習</h3>
-    <p>{{ total }} 件のデータで決定木を再学習できます</p>
+    <p>{{ feedback_count }} 件のフィードバックで決定木を再学習できます</p>
     <button class="btn btn-outline" onclick="retrain()">再学習する</button>
     <p id="retrainMsg" class="retrain-msg"></p>
   </div>
@@ -69,7 +69,7 @@
   </div>
 </div>
 
-{% if total >= 50 %}
+{% if feedback_count >= 50 %}
 <script>
 async function retrain() {
   const btn = event.target;

@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'dinner.db')
+DB_PATH = os.environ.get('DATABASE_URL', os.path.join(os.path.dirname(__file__), 'dinner.db'))
 
 
 def get_conn():
@@ -29,6 +29,15 @@ def init_db():
                 group_name  TEXT    NOT NULL,
                 foods       TEXT    NOT NULL,
                 highlight   TEXT
+            )
+        ''')
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS feedback (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                result_id    INTEGER NOT NULL REFERENCES quiz_results(id),
+                actual_food  TEXT    NOT NULL,
+                satisfaction INTEGER NOT NULL CHECK(satisfaction BETWEEN 1 AND 5),
+                created_at   TEXT    NOT NULL
             )
         ''')
         conn.commit()
@@ -95,6 +104,39 @@ class Database:
             rows = conn.execute(
                 'SELECT group_id, group_name, COUNT(*) as cnt'
                 ' FROM quiz_results GROUP BY group_id ORDER BY group_id'
+            ).fetchall()
+        return [dict(r) for r in rows]
+
+    def save_feedback(self, result_id, actual_food, satisfaction):
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        with get_conn() as conn:
+            existing = conn.execute(
+                'SELECT id FROM feedback WHERE result_id = ?', (result_id,)
+            ).fetchone()
+            if existing:
+                conn.execute(
+                    'UPDATE feedback SET actual_food = ?, satisfaction = ?, created_at = ? WHERE result_id = ?',
+                    (actual_food, satisfaction, now, result_id)
+                )
+            else:
+                conn.execute(
+                    'INSERT INTO feedback (result_id, actual_food, satisfaction, created_at) VALUES (?,?,?,?)',
+                    (result_id, actual_food, satisfaction, now)
+                )
+            conn.commit()
+
+    def get_feedback_count(self):
+        with get_conn() as conn:
+            return conn.execute('SELECT COUNT(*) FROM feedback').fetchone()[0]
+
+    def get_feedback_for_training(self):
+        with get_conn() as conn:
+            rows = conn.execute(
+                '''SELECT qr.stress, qr.fatigue, qr.tension, qr.vitality,
+                          qr.social, qr.desire, qr.confusion,
+                          fb.actual_food, fb.satisfaction
+                   FROM feedback fb
+                   JOIN quiz_results qr ON fb.result_id = qr.id'''
             ).fetchall()
         return [dict(r) for r in rows]
 

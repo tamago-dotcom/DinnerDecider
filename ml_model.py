@@ -4,7 +4,8 @@ import os
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), 'model.pkl')
+_data_dir = os.path.dirname(os.environ.get('DATABASE_URL', os.path.join(os.path.dirname(__file__), 'dinner.db')))
+MODEL_PATH = os.path.join(_data_dir, 'model.pkl')
 
 CATEGORY_NAMES = ['ストレス', '疲労', '緊張', '活気', '社会性', '欲求', '混乱']
 
@@ -73,6 +74,18 @@ GROUP_INFO = {
         'foods': ['カレー', 'ハンバーグ', '生姜焼き', 'パスタ'],
     },
 }
+
+
+def food_to_group(food_name):
+    """Search GROUP_INFO foods lists and return group_id for the given food name."""
+    if not food_name:
+        return None
+    food_lower = food_name.lower()
+    for group_id, info in GROUP_INFO.items():
+        for food in info['foods']:
+            if food == food_name or food.lower().startswith(food_lower) or food_lower.startswith(food.lower()):
+                return group_id
+    return None
 
 
 def _rand(lo, hi, n):
@@ -164,8 +177,8 @@ class MLModel:
         X = np.array(category_scores, dtype=float).reshape(1, -1)
         return int(self.clf.predict(X)[0])
 
-    def retrain(self, training_data):
-        """Retrain with real user data (merged with synthetic)."""
+    def retrain(self, training_data, feedback_data=None):
+        """Retrain with real user data (merged with synthetic) and optional feedback data."""
         X_syn, y_syn = _generate_training_data()
 
         X_real = np.array([
@@ -175,8 +188,23 @@ class MLModel:
         ], dtype=float)
         y_real = np.array([d['group_id'] for d in training_data])
 
-        X = np.vstack([X_syn, X_real])
-        y = np.concatenate([y_syn, y_real])
+        X_parts = [X_syn, X_real]
+        y_parts = [y_syn, y_real]
+
+        if feedback_data:
+            for fb in feedback_data:
+                group_id = food_to_group(fb['actual_food'])
+                if group_id is None:
+                    continue
+                row = [fb['stress'], fb['fatigue'], fb['tension'],
+                       fb['vitality'], fb['social'], fb['desire'], fb['confusion']]
+                repeat = 2 if fb['satisfaction'] >= 4 else 1
+                for _ in range(repeat):
+                    X_parts.append(np.array([row]))
+                    y_parts.append(np.array([group_id]))
+
+        X = np.vstack(X_parts)
+        y = np.concatenate(y_parts)
 
         clf = DecisionTreeClassifier(max_depth=6, min_samples_leaf=5, random_state=42)
         try:

@@ -53,6 +53,39 @@
     </div>
   </section>
 
+  <!-- フィードバックセクション -->
+  <section class="result-section" id="feedbackSection">
+    <h2 class="section-title">💬 実際に何を食べましたか？</h2>
+    <!-- 未送信状態 -->
+    <div id="feedbackForm">
+      <!-- 提案4品 + その他ボタン -->
+      <div class="feedback-food-grid" id="feedbackFoodGrid">
+        {% for food in result.foods %}
+        <button class="feedback-food-btn" data-food="{{ food }}">{{ food }}</button>
+        {% endfor %}
+        <button class="feedback-food-btn" data-food="その他">その他</button>
+      </div>
+      <!-- その他テキスト入力（「その他」選択時のみ表示） -->
+      <input type="text" id="feedbackOtherInput" class="feedback-other-input"
+             placeholder="食べたものを入力..." style="display:none;">
+      <!-- 星評価 -->
+      <div class="feedback-stars" id="feedbackStars">
+        <p class="feedback-stars-label">満足度</p>
+        <div class="stars-row">
+          <!-- 星1〜5はfeedback.jsで生成 -->
+        </div>
+      </div>
+      <button class="btn btn-primary" id="feedbackSubmitBtn" onclick="submitFeedback()" disabled>
+        フィードバックを送る
+      </button>
+    </div>
+    <!-- 送信済み状態 -->
+    <div id="feedbackDone" style="display:none;" class="feedback-done">
+      <p>ありがとうございました！🙏</p>
+      <p class="feedback-done-sub">あなたのフィードバックでAIが賢くなります</p>
+    </div>
+  </section>
+
   <!-- Actions -->
   <div class="result-actions">
     <a href="{{ url_for('quiz') }}" class="btn btn-primary">もう一度診断する</a>
@@ -64,6 +97,9 @@
 </div>
 
 <script>
+// result_idをJSに渡す
+window.FEEDBACK_RESULT_ID = {{ result.id }};
+
 const labels = {{ category_names | tojson }};
 const scores = [
   {{ result.stress }},
@@ -115,4 +151,8 @@ new Chart(ctx, {
   }
 });
 </script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/feedback.js') }}"></script>
 {% endblock %}
