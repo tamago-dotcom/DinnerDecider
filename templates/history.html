@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}診断履歴 | 今夜なに食べる？{% endblock %}
+
+{% block content %}
+<div class="history-container">
+  <h1 class="page-title">📋 診断履歴</h1>
+
+  {% if total == 0 %}
+  <div class="empty-state">
+    <p class="empty-emoji">🍽️</p>
+    <p>まだ診断履歴がありません</p>
+    <a href="{{ url_for('quiz') }}" class="btn btn-primary">最初の診断をする</a>
+  </div>
+
+  {% else %}
+  <p class="history-count">合計 <strong>{{ total }}</strong> 件の診断</p>
+
+  <div class="history-list">
+    {% for r in results %}
+    <a href="{{ url_for('result', result_id=r.id) }}" class="history-card">
+      <div class="history-card-left">
+        <span class="history-group-id">G{{ r.group_id }}</span>
+        <div>
+          <p class="history-group-name">{{ r.group_name }}</p>
+          <p class="history-date">{{ r.created_at }}</p>
+        </div>
+      </div>
+      <div class="history-foods">
+        {% for food in r.foods[:2] %}
+        <span class="history-food-chip">{{ food }}</span>
+        {% endfor %}
+        {% if r.foods|length > 2 %}
+        <span class="history-food-chip history-food-chip--more">+{{ r.foods|length - 2 }}</span>
+        {% endif %}
+      </div>
+      <span class="history-arrow">›</span>
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if total_pages > 1 %}
+  <div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('history', page=page-1) }}" class="btn btn-outline btn-sm">← 前へ</a>
+    {% endif %}
+    <span class="pagination-info">{{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="{{ url_for('history', page=page+1) }}" class="btn btn-outline btn-sm">次へ →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Retrain section (shown when 50+ records) -->
+  {% if total >= 50 %}
+  <div class="retrain-section">
+    <h3>🤖 AIモデルの再学習</h3>
+    <p>{{ total }} 件のデータで決定木を再学習できます</p>
+    <button class="btn btn-outline" onclick="retrain()">再学習する</button>
+    <p id="retrainMsg" class="retrain-msg"></p>
+  </div>
+  {% endif %}
+
+  {% endif %}
+
+  <div class="history-actions">
+    <a href="{{ url_for('quiz') }}" class="btn btn-primary">新しく診断する</a>
+    <a href="{{ url_for('index') }}" class="btn btn-ghost">トップへ</a>
+  </div>
+</div>
+
+{% if total >= 50 %}
+<script>
+async function retrain() {
+  const btn = event.target;
+  const msg = document.getElementById('retrainMsg');
+  btn.disabled = true;
+  btn.textContent = '再学習中...';
+  try {
+    const res = await fetch('/api/retrain', { method: 'POST' });
+    const data = await res.json();
+    msg.textContent = data.message;
+    msg.style.color = data.success ? '#2ecc71' : '#e74c3c';
+  } catch(e) {
+    msg.textContent = 'エラーが発生しました';
+    msg.style.color = '#e74c3c';
+  }
+  btn.disabled = false;
+  btn.textContent = '再学習する';
+}
+</script>
+{% endif %}
+{% endblock %}

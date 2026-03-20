@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}今夜なに食べる？{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="site-header">
+    <a href="{{ url_for('index') }}" class="site-logo">🍽️ 今夜なに食べる？</a>
+    <nav>
+      <a href="{{ url_for('history') }}" class="nav-link">📋 履歴</a>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <p>今夜なに食べる？ &copy; 2024</p>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}診断中 | 今夜なに食べる？{% endblock %}
+
+{% block content %}
+<div class="quiz-container" id="quizApp">
+
+  <!-- Loading state -->
+  <div id="quizLoading" class="quiz-loading">
+    <div class="spinner"></div>
+    <p>質問を準備しています...</p>
+  </div>
+
+  <!-- Quiz body -->
+  <div id="quizBody" style="display:none;">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressText">1 / 5</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill" style="width:20%"></div>
+      </div>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <p class="question-number" id="questionNumber">Q1</p>
+      <p class="question-text" id="questionText"></p>
+      <div class="options-list" id="optionsList"></div>
+    </div>
+
+    <div class="quiz-nav">
+      <button class="btn btn-outline" id="btnPrev" onclick="prevQuestion()">← 戻る</button>
+      <button class="btn btn-primary" id="btnNext" onclick="nextQuestion()" disabled>次へ →</button>
+    </div>
+  </div>
+
+  <!-- Submitting state -->
+  <div id="quizSubmitting" style="display:none;" class="quiz-loading">
+    <div class="spinner"></div>
+    <p>診断中です...🍜</p>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-emoji">🍜🍣🍛🍲</div>
+    <h1 class="hero-title">今夜なに食べる？</h1>
+    <p class="hero-subtitle">
+      今の気分を5つの質問で分析して<br>
+      あなたにぴったりの夕食を提案します
+    </p>
+
+    <div class="hero-cards">
+      <div class="hero-card">
+        <span class="hero-card-icon">🎯</span>
+        <span>5問だけ</span>
+      </div>
+      <div class="hero-card">
+        <span class="hero-card-icon">⚡</span>
+        <span>30秒で完了</span>
+      </div>
+      <div class="hero-card">
+        <span class="hero-card-icon">🤖</span>
+        <span>AI診断</span>
+      </div>
+    </div>
+
+    <a href="{{ url_for('quiz') }}" class="btn btn-primary btn-large">
+      診断スタート！
+    </a>
+
+    {% if count > 0 %}
+    <p class="hero-count">これまでに <strong>{{ count }}</strong> 回の診断が行われました</p>
+    {% endif %}
+  </div>
+
+  <div class="group-preview">
+    <h2 class="section-title">あなたはどのタイプ？</h2>
+    <div class="group-grid">
+      <div class="group-chip">💪 限界戦士</div>
+      <div class="group-chip">🎉 ご褒美モード</div>
+      <div class="group-chip">🍵 癒しが欲しい</div>
+      <div class="group-chip">🥗 健康意識モード</div>
+      <div class="group-chip">😴 省エネモード</div>
+      <div class="group-chip">🌶️ 発散したい</div>
+      <div class="group-chip">🍻 社交モード</div>
+      <div class="group-chip">🥹 しんみりモード</div>
+      <div class="group-chip">🌍 チャレンジャー</div>
+      <div class="group-chip">🍽️ 普通の日</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
