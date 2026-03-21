@@ -2,6 +2,38 @@
 
 ---
 
+## [2026-03-21] PEP8 docstring・インラインコメント追加
+
+### 単体テスト
+- 構文チェック（app.py）: ✅
+- 構文チェック（database.py）: ✅
+- 構文チェック（ml_model.py）: ✅
+- 構文チェック（questions_data.py）: ✅
+- モジュールdocstring 存在（4ファイル全て）: ✅
+- Database.save_result docstring: ✅
+- Database.get_result docstring: ✅
+- Database.save_feedback docstring: ✅
+- MLModel.predict docstring: ✅
+- MLModel.retrain docstring: ✅
+- food_to_group docstring: ✅
+
+### 結合テスト（ロジック不変確認）
+- GET /: ✅
+- GET /api/questions（5問取得）: ✅
+- POST /api/submit: ✅
+- GET /result/\<id\>: ✅
+- GET /history: ✅
+- GET /api/feedback/count: ✅
+- GET /api/stats: ✅
+- ML predict G1（高ストレス・高疲労）: ✅
+- ML predict G9（高活気・高欲求）: ✅
+- food_to_group 既知料理・未知料理・None: ✅
+- 質問バンク35問・カテゴリ0-6全存在: ✅
+
+### 結果: 全通過（24/24）
+
+---
+
 ## [2026-03-21] セッション単位の履歴フィルタリング
 
 ### 単体テスト
