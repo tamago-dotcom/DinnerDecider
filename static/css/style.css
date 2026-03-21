@@ -444,6 +444,15 @@ img { max-width: 100%; }
   text-align: center;
   transition: all var(--transition);
   position: relative;
+  text-decoration: none;
+  display: block;
+  color: var(--text);
+}
+
+.food-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--primary);
 }
 
 .food-card--highlight {
@@ -452,6 +461,26 @@ img { max-width: 100%; }
   color: #fff;
   box-shadow: 0 4px 16px rgba(255,107,53,0.35);
   transform: scale(1.03);
+}
+
+.food-card--highlight:hover {
+  transform: scale(1.03) translateY(-3px);
+}
+
+.food-recipe-hint {
+  display: none;
+  font-size: 0.75rem;
+  color: var(--primary);
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.food-card:hover .food-recipe-hint {
+  display: block;
+}
+
+.food-card--highlight .food-recipe-hint {
+  color: rgba(255,255,255,0.9);
 }
 
 .food-name {

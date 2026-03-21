@@ -2,6 +2,34 @@
 
 ---
 
+## [2026-03-21] 料理カードをクックパッド検索リンクに変更
+
+### 単体テスト
+- app.py 構文チェック: ✅
+- database.py 構文チェック: ✅
+- ml_model.py 構文チェック: ✅
+- questions_data.py 構文チェック: ✅
+- result.html: Cookpad URL（https://cookpad.com/search/{{ food }}）: ✅
+- result.html: target="_blank" 属性: ✅
+- result.html: rel="noopener noreferrer" 属性: ✅
+- result.html: food-recipe-hint クラス: ✅
+- style.css: .food-card に text-decoration:none・display:block: ✅
+- style.css: .food-recipe-hint スタイル定義: ✅
+- style.css: .food-card:hover .food-recipe-hint 表示ルール: ✅
+- style.css: .food-card--highlight .food-recipe-hint 色ルール: ✅
+- style.css: .food-card:hover リフト効果: ✅
+
+### 結合テスト
+- POST /api/submit → result_id 取得: ✅
+- GET /result/<id>: cookpad.com/search/ リンク描画: ✅
+- GET /result/<id>: target=_blank 描画: ✅
+- GET /result/<id>: 「レシピを見る →」テキスト描画: ✅
+- GET /result/<id>: <a>タグの food-card 4件確認: ✅
+
+### 結果: 全通過（18/18）
+
+---
+
 ## [2026-03-21] 再学習ボタンを履歴ページから削除
 
 ### 単体テスト

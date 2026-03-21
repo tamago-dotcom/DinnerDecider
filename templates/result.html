@@ -21,12 +21,15 @@
     <h2 class="section-title">🍴 おすすめの夕食</h2>
     <div class="food-grid">
       {% for food in result.foods %}
-      <div class="food-card {% if result.highlight == food %}food-card--highlight{% endif %}">
+      <a href="https://cookpad.com/search/{{ food }}"
+         target="_blank" rel="noopener noreferrer"
+         class="food-card {% if result.highlight == food %}food-card--highlight{% endif %}">
         <span class="food-name">{{ food }}</span>
         {% if result.highlight == food %}
         <span class="food-badge">今夜はこれ！</span>
         {% endif %}
-      </div>
+        <span class="food-recipe-hint">レシピを見る →</span>
+      </a>
       {% endfor %}
     </div>
     {% if result.highlight %}
