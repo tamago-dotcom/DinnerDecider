@@ -40,6 +40,10 @@ def init_db():
                 created_at   TEXT    NOT NULL
             )
         ''')
+        # Migration: add session_id column if it doesn't exist
+        cols = [row[1] for row in conn.execute("PRAGMA table_info(quiz_results)").fetchall()]
+        if 'session_id' not in cols:
+            conn.execute("ALTER TABLE quiz_results ADD COLUMN session_id TEXT NOT NULL DEFAULT ''")
         conn.commit()
 
 
@@ -47,17 +51,17 @@ class Database:
     def __init__(self):
         init_db()
 
-    def save_result(self, category_scores, group_id, group_name, foods, highlight=None):
+    def save_result(self, category_scores, group_id, group_name, foods, highlight=None, session_id=''):
         s, f, t, v, so, d, c = category_scores
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         with get_conn() as conn:
             cur = conn.execute(
                 '''INSERT INTO quiz_results
                    (created_at, stress, fatigue, tension, vitality, social, desire, confusion,
-                    group_id, group_name, foods, highlight)
-                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?)''',
+                    group_id, group_name, foods, highlight, session_id)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''',
                 (now, s, f, t, v, so, d, c, group_id, group_name,
-                 json.dumps(foods, ensure_ascii=False), highlight)
+                 json.dumps(foods, ensure_ascii=False), highlight, session_id)
             )
             conn.commit()
             return cur.lastrowid
@@ -78,17 +82,27 @@ class Database:
             ).fetchall()
         return [self._row_to_dict(r) for r in rows]
 
-    def get_results_paginated(self, page=1, per_page=10):
+    def get_results_paginated(self, page=1, per_page=10, session_id=None):
         offset = (page - 1) * per_page
         with get_conn() as conn:
-            rows = conn.execute(
-                'SELECT * FROM quiz_results ORDER BY id DESC LIMIT ? OFFSET ?',
-                (per_page, offset)
-            ).fetchall()
+            if session_id is not None:
+                rows = conn.execute(
+                    'SELECT * FROM quiz_results WHERE session_id = ? ORDER BY id DESC LIMIT ? OFFSET ?',
+                    (session_id, per_page, offset)
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    'SELECT * FROM quiz_results ORDER BY id DESC LIMIT ? OFFSET ?',
+                    (per_page, offset)
+                ).fetchall()
         return [self._row_to_dict(r) for r in rows]
 
-    def get_result_count(self):
+    def get_result_count(self, session_id=None):
         with get_conn() as conn:
+            if session_id is not None:
+                return conn.execute(
+                    'SELECT COUNT(*) FROM quiz_results WHERE session_id = ?', (session_id,)
+                ).fetchone()[0]
             return conn.execute('SELECT COUNT(*) FROM quiz_results').fetchone()[0]
 
     def get_training_data(self):

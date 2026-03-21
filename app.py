@@ -1,7 +1,8 @@
 import random
 import json
 import os
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+import uuid
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 
 from database import Database
 from ml_model import MLModel, GROUP_INFO, CATEGORY_NAMES
@@ -15,6 +16,12 @@ model = MLModel()
 
 NUM_QUESTIONS = 5
 NUM_CATEGORIES = 7
+
+
+@app.before_request
+def ensure_session_id():
+    if 'sid' not in session:
+        session['sid'] = str(uuid.uuid4())
 
 
 @app.route('/')
@@ -64,12 +71,14 @@ def api_submit():
     if group_id == 10:
         highlight = random.choice(foods)
 
+    session_id = session.get('sid', '')
     result_id = db.save_result(
         category_scores=category_scores,
         group_id=group_id,
         group_name=info['name'],
         foods=foods,
         highlight=highlight,
+        session_id=session_id,
     )
     return jsonify({'result_id': result_id})
 
@@ -88,8 +97,9 @@ def result(result_id):
 def history():
     page = request.args.get('page', 1, type=int)
     per_page = 10
-    results = db.get_results_paginated(page=page, per_page=per_page)
-    total = db.get_result_count()
+    sid = session.get('sid', '')
+    results = db.get_results_paginated(page=page, per_page=per_page, session_id=sid)
+    total = db.get_result_count(session_id=sid)
     total_pages = (total + per_page - 1) // per_page
     feedback_count = db.get_feedback_count()
     return render_template('history.html', results=results,
