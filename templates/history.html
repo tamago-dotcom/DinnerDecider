@@ -52,16 +52,6 @@
   </div>
   {% endif %}
 
-  <!-- Retrain section (shown when 50+ feedback records) -->
-  {% if feedback_count >= 50 %}
-  <div class="retrain-section">
-    <h3>🤖 AIモデルの再学習</h3>
-    <p>{{ feedback_count }} 件のフィードバックで決定木を再学習できます</p>
-    <button class="btn btn-outline" onclick="retrain()">再学習する</button>
-    <p id="retrainMsg" class="retrain-msg"></p>
-  </div>
-  {% endif %}
-
   {% endif %}
 
   <div class="history-actions">
@@ -70,25 +60,4 @@
   </div>
 </div>
 
-{% if feedback_count >= 50 %}
-<script>
-async function retrain() {
-  const btn = event.target;
-  const msg = document.getElementById('retrainMsg');
-  btn.disabled = true;
-  btn.textContent = '再学習中...';
-  try {
-    const res = await fetch('/api/retrain', { method: 'POST' });
-    const data = await res.json();
-    msg.textContent = data.message;
-    msg.style.color = data.success ? '#2ecc71' : '#e74c3c';
-  } catch(e) {
-    msg.textContent = 'エラーが発生しました';
-    msg.style.color = '#e74c3c';
-  }
-  btn.disabled = false;
-  btn.textContent = '再学習する';
-}
-</script>
-{% endif %}
 {% endblock %}

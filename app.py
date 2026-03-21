@@ -184,6 +184,8 @@ def history():
 
     Flaskセッションの 'sid' に紐づく診断結果のみを表示する。
     他ユーザーの結果は表示されない。
+    再学習ボタンは廃止し、開発者がClaude Code経由で
+    POST /api/retrain を直接呼び出す運用とする。
 
     クエリパラメータ:
         page (int): ページ番号（デフォルト: 1）。
@@ -199,14 +201,12 @@ def history():
     )
     total = db.get_result_count(session_id=sid)
     total_pages = (total + per_page - 1) // per_page  # 切り上げ除算
-    feedback_count = db.get_feedback_count()
     return render_template(
         'history.html',
         results=results,
         page=page,
         total_pages=total_pages,
         total=total,
-        feedback_count=feedback_count,
     )
 
 
