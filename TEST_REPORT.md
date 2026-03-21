@@ -1,5 +1,30 @@
 # TEST_REPORT.md
 
+---
+
+## [2026-03-21] セッション単位の履歴フィルタリング
+
+### 単体テスト
+- session_idカラム存在（quiz_results）: ✅
+- get_result_count(session_id=A) → 2件: ✅
+- get_result_count(session_id=B) → 1件: ✅
+- get_result_count()引数なし → 全件返す: ✅
+- get_results_paginated(session_id=A) → 2件: ✅
+- get_results_paginated(session_id=B) → 1件: ✅
+- sid_Aの結果にsid_Bのデータが混入しない: ✅
+- get_training_data()はsession_idでフィルタしない（ML用全件）: ✅
+
+### 結合テスト
+- before_request: sidが自動生成される（UUID形式）: ✅
+- GET /history → 200: ✅
+- 自分の診断結果が履歴に表示される: ✅
+- 別セッションの結果が自分の履歴に表示されない: ✅
+- 履歴画面にセッション説明文が表示される: ✅
+
+### 結果: 全通過（13/13）
+
+---
+
 ## テスト実施日: 2026-03-20
 ## 対象機能: フィードバック機能
 

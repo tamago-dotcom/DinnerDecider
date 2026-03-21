@@ -3,6 +3,7 @@
 ## バージョン
 - v1.0: 初期リリース（診断機能・履歴機能）
 - v1.1: フィードバック機能追加（2026-03-20）
+- v1.2: セッション単位の履歴フィルタリング実装（2026-03-21）
 
 ## システム概要
 
@@ -41,6 +42,15 @@
 - 同一診断結果への再送信は上書き保存（INSERT or UPDATE）
 - フィードバックデータをMLモデルの再学習に活用
 
+### v1.2 機能
+
+#### セッション単位の履歴フィルタリング
+- Flaskセッション（クッキーベース）にUUIDの `session_id` を保存（`app.before_request` で自動生成）
+- 診断結果はその `session_id` と紐づけて `quiz_results` テーブルに保存
+- 履歴ページ（`/history`）は同一 `session_id` の結果のみ表示（他ユーザーのデータは見えない）
+- ブラウザを閉じるとセッションクッキーがリセットされ `session_id` も変わるため履歴も消える（ログイン不要）
+- MLの再学習（`get_training_data`）は `session_id` でフィルタせず全件を対象とする
+
 ---
 
 ## データベース設計
@@ -62,6 +72,7 @@
 | group_name | TEXT | NOT NULL | グループ名（例: 限界戦士） |
 | foods | TEXT | NOT NULL | 提案料理リスト（JSON配列文字列） |
 | highlight | TEXT | | G10のときランダム選出された1品（NULL可） |
+| session_id | TEXT | NOT NULL DEFAULT '' | ブラウザセッションID（UUID） |
 
 ### feedback テーブル
 
@@ -84,7 +95,7 @@
 | GET | `/api/questions` | ランダム5問取得 | - | `{"questions": [...]}` |
 | POST | `/api/submit` | 診断結果の送信・保存 | `{"answers": {q_id: {"value": int, "category": int}, ...}}` | `{"result_id": int}` |
 | GET | `/result/<result_id>` | 診断結果詳細画面 | パスパラメータ: result_id | HTML（存在しない場合はトップへリダイレクト） |
-| GET | `/history` | 履歴一覧画面 | クエリパラメータ: `page`（デフォルト1） | HTML |
+| GET | `/history` | 履歴一覧画面（現在のセッションIDに紐づく結果のみ返す） | クエリパラメータ: `page`（デフォルト1） | HTML |
 | POST | `/api/feedback` | フィードバック送信 | `{"result_id": int, "actual_food": str, "satisfaction": int}` | `{"success": bool, "message": str}` |
 | GET | `/api/feedback/count` | フィードバック件数取得 | - | `{"count": int}` |
 | POST | `/api/retrain` | MLモデル再学習 | - | `{"success": bool, "message": str}` |
