@@ -61,11 +61,6 @@ function selectOption(value, optIdx) {
   });
 
   updateNextButton();
-
-  // Auto-advance after short delay on non-last question
-  if (currentIndex < questions.length - 1) {
-    setTimeout(() => nextQuestion(), 400);
-  }
 }
 
 function updateNextButton() {
