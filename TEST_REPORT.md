@@ -2,6 +2,29 @@
 
 ---
 
+## [2026-03-22] 質問画面の自動遷移を廃止し「次へ」ボタン方式に変更
+
+### 単体テスト
+- app.py 構文チェック: ✅
+- database.py 構文チェック: ✅
+- ml_model.py 構文チェック: ✅
+- questions_data.py 構文チェック: ✅
+- app.js: 自動遷移(setTimeout)が削除されている: ✅
+- app.js: 選択時にselectedクラスをトグルしている: ✅
+- app.js: 未選択時にnextボタンがdisabled: ✅
+- app.js: nextQuestion()関数が存在する: ✅
+- quiz.html: nextQuestion / prevQuestion ボタン確認: ✅
+
+### 結合テスト
+- GET /quiz: 200: ✅
+- GET /api/questions: 5問取得: ✅
+- POST /api/submit → result_id取得: ✅
+- GET /result/<id>: 200: ✅
+
+### 結果: 全通過（13/13）
+
+---
+
 ## [2026-03-21] 料理カードをクックパッド検索リンクに変更
 
 ### 単体テスト
