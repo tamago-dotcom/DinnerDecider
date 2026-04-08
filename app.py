@@ -9,7 +9,7 @@ import os
 import uuid
 from flask import (
     Flask, render_template, request, jsonify,
-    redirect, url_for, session,
+    redirect, url_for, session, send_from_directory,
 )
 
 from database import Database
@@ -37,6 +37,21 @@ def ensure_session_id():
     """
     if 'sid' not in session:
         session['sid'] = str(uuid.uuid4())
+
+
+@app.route('/sw.js')
+def service_worker():
+    """Service Worker スクリプトをルートスコープで配信する。
+
+    PWA の Service Worker はスコープの都合上、/sw.js として
+    提供する必要があるため、static/js/sw.js を専用ルートで返す。
+
+    Returns:
+        Response: sw.js ファイル（Cache-Control: no-cache）。
+    """
+    response = send_from_directory('static/js', 'sw.js')
+    response.headers['Cache-Control'] = 'no-cache'
+    return response
 
 
 @app.route('/')

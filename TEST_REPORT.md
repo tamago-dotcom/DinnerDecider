@@ -2,6 +2,36 @@
 
 ---
 
+## [2026-04-08] PWA化（manifest.json / Service Worker / アイコン）
+
+### 単体テスト
+- app.py 構文チェック: ✅
+- database.py 構文チェック: ✅
+- ml_model.py 構文チェック: ✅
+- questions_data.py 構文チェック: ✅
+- manifest.json: name/short_name/theme_color/background_color/display/icons: ✅
+- static/icons/icon-192.svg 存在確認: ✅
+- static/icons/icon-512.svg 存在確認: ✅
+- static/icons/apple-touch-icon.svg 存在確認: ✅
+- sw.js: install/activate/fetch/offline fallback: ✅
+- base.html: manifest/theme-color/iOS meta/SW登録スクリプト: ✅
+- index.html: pwa-hint/iOS・Android手順: ✅
+- style.css: .pwa-hint スタイル: ✅
+
+### 結合テスト
+- GET /: manifest/SW登録/pwa-hint/ホーム画面手順 レンダリング: ✅
+- GET /sw.js: 200, Content-Type=JS, Cache-Control=no-cache: ✅
+- GET /static/manifest.json: 200, JSON valid: ✅
+- GET /static/icons/icon-192.svg: 200: ✅
+- GET /static/icons/icon-512.svg: 200: ✅
+- GET /static/icons/apple-touch-icon.svg: 200: ✅
+- GET /quiz: 200（既存機能正常）: ✅
+- GET /api/questions: 5問取得（既存機能正常）: ✅
+
+### 結果: 全通過（20/20）
+
+---
+
 ## [2026-03-22] 質問画面の自動遷移を廃止し「次へ」ボタン方式に変更
 
 ### 単体テスト
