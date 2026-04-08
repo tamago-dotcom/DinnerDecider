@@ -63,8 +63,7 @@ def index():
     Returns:
         Response: index.html のレンダリング結果。
     """
-    count = db.get_result_count()  # 全ユーザー合計の診断件数
-    return render_template('index.html', count=count)
+    return render_template('index.html')
 
 
 @app.route('/quiz')
