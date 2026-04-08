@@ -99,7 +99,8 @@ async function submitAnswers() {
   document.getElementById('quizBody').style.display = 'none';
   document.getElementById('quizSubmitting').style.display = 'flex';
 
-  const payload = { answers: {} };
+  const mode = document.getElementById('quizMode')?.value || 'in';
+  const payload = { answers: {}, mode };
   for (const [qid, ans] of Object.entries(answers)) {
     payload.answers[qid] = { value: ans.value, category: ans.category };
   }

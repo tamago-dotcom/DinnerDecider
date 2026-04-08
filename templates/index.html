@@ -25,9 +25,14 @@
       </div>
     </div>
 
-    <a href="{{ url_for('quiz') }}" class="btn btn-primary btn-large">
-      診断スタート！
-    </a>
+    <div class="mode-buttons">
+      <a href="{{ url_for('quiz', mode='out') }}" class="btn btn-primary btn-large">
+        🍽️ 外食を決める
+      </a>
+      <a href="{{ url_for('quiz', mode='in') }}" class="btn btn-outline btn-large">
+        🍳 自炊を決める
+      </a>
+    </div>
 
     {% if count > 0 %}
     <p class="hero-count">これまでに <strong>{{ count }}</strong> 回の診断が行われました</p>

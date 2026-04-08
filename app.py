@@ -71,10 +71,17 @@ def index():
 def quiz():
     """クイズ（診断）画面を返す。
 
+    クエリパラメータ:
+        mode (str): 診断モード。'out'（外食）または 'in'（自炊）。
+            不正値は 'in' にフォールバック。デフォルトは 'in'。
+
     Returns:
         Response: quiz.html のレンダリング結果。
     """
-    return render_template('quiz.html')
+    mode = request.args.get('mode', 'in')
+    if mode not in ('out', 'in'):
+        mode = 'in'
+    return render_template('quiz.html', mode=mode)
 
 
 @app.route('/api/questions')
@@ -132,7 +139,8 @@ def api_submit():
                     "category": int    # カテゴリインデックス (0-6)
                 },
                 ...
-            }
+            },
+            "mode": str  # 'out'（外食）または 'in'（自炊）
         }
 
     Returns:
@@ -141,6 +149,9 @@ def api_submit():
     """
     data = request.get_json()
     answers = data.get('answers', {})
+    mode = data.get('mode', 'in')
+    if mode not in ('out', 'in'):
+        mode = 'in'
 
     # 未回答カテゴリはニュートラル値 1.0 で初期化
     category_scores = [1.0] * NUM_CATEGORIES
@@ -151,7 +162,9 @@ def api_submit():
     group_id = model.predict(category_scores)
     info = GROUP_INFO[group_id]
 
-    foods = info['foods'][:]  # リストをコピーして元データを保護
+    # 外食・自炊モードに応じた料理リストを選択
+    foods_key = 'foods_out' if mode == 'out' else 'foods_in'
+    foods = info[foods_key][:]  # リストをコピーして元データを保護
     highlight = None
     if group_id == 10:  # G10のみ提案料理をランダムに1品強調表示
         highlight = random.choice(foods)
@@ -164,6 +177,7 @@ def api_submit():
         foods=foods,
         highlight=highlight,
         session_id=session_id,
+        mode=mode,
     )
     return jsonify({'result_id': result_id})
 
