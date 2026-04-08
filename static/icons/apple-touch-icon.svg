@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <!-- Background rounded square -->
+  <rect width="180" height="180" rx="38" fill="#FF6B35"/>
+  <!-- Plate outer ring -->
+  <circle cx="90" cy="96" r="54" fill="none" stroke="white" stroke-width="7"/>
+  <!-- Plate inner ring -->
+  <circle cx="90" cy="96" r="37" fill="none" stroke="white" stroke-width="3" opacity="0.6"/>
+  <!-- Fork (left of plate) -->
+  <rect x="26" y="42" width="7" height="48" rx="3.5" fill="white"/>
+  <rect x="20" y="42" width="5" height="22" rx="2.5" fill="white"/>
+  <rect x="32" y="42" width="5" height="22" rx="2.5" fill="white"/>
+  <!-- Knife (right of plate) -->
+  <rect x="147" y="42" width="7" height="48" rx="3.5" fill="white"/>
+  <path d="M147 42 Q159 49 159 69 L154 69 L147 65 Z" fill="white"/>
+</svg>
