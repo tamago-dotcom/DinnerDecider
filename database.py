@@ -32,7 +32,7 @@ def init_db():
     """データベースとテーブルを初期化する。
 
     quiz_results・feedback テーブルを CREATE TABLE IF NOT EXISTS で作成する。
-    既存DBへの session_id カラム追加マイグレーションも実行する。
+    既存DBへの session_id・mode カラム追加マイグレーションも実行する。
     冪等性があるため、起動のたびに呼び出しても安全。
     """
     with get_conn() as conn:
@@ -62,7 +62,7 @@ def init_db():
                 created_at   TEXT    NOT NULL
             )
         ''')
-        # 既存DBに session_id カラムがない場合のみ追加する
+        # 既存DBへのカラム追加マイグレーション（冪等）
         cols = [
             row[1]
             for row in conn.execute(
@@ -73,6 +73,12 @@ def init_db():
             conn.execute(
                 "ALTER TABLE quiz_results "
                 "ADD COLUMN session_id TEXT NOT NULL DEFAULT ''"
+            )
+        if 'mode' not in cols:
+            # 既存レコードは自炊モード相当として扱う
+            conn.execute(
+                "ALTER TABLE quiz_results "
+                "ADD COLUMN mode TEXT NOT NULL DEFAULT 'in'"
             )
         conn.commit()
 
@@ -95,6 +101,7 @@ class Database:
         foods,
         highlight=None,
         session_id='',
+        mode='in',
     ):
         """診断結果をquiz_resultsテーブルに保存する。
 
@@ -109,6 +116,8 @@ class Database:
                 G10以外は None。
             session_id (str): ブラウザセッションのUUID。
                 デフォルトは空文字。
+            mode (str): 診断モード。'out'（外食）または 'in'（自炊）。
+                デフォルトは 'in'。
 
         Returns:
             int: 保存したレコードのID（AUTOINCREMENT値）。
@@ -120,10 +129,11 @@ class Database:
                 '''INSERT INTO quiz_results
                    (created_at, stress, fatigue, tension, vitality,
                     social, desire, confusion,
-                    group_id, group_name, foods, highlight, session_id)
-                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''',
+                    group_id, group_name, foods, highlight, session_id, mode)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
                 (now, s, f, t, v, so, d, c, group_id, group_name,
-                 json.dumps(foods, ensure_ascii=False), highlight, session_id)
+                 json.dumps(foods, ensure_ascii=False), highlight, session_id,
+                 mode)
             )
             conn.commit()
             return cur.lastrowid

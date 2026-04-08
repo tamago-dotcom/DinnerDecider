@@ -1,7 +1,11 @@
 {% extends "base.html" %}
-{% block title %}診断中 | 今夜なに食べる？{% endblock %}
+{% block title %}診断中 | 気分メシ！{% endblock %}
 
 {% block content %}
+<input type="hidden" id="quizMode" value="{{ mode }}">
+<div class="mode-badge {% if mode == 'out' %}mode-badge--out{% else %}mode-badge--in{% endif %}">
+  {% if mode == 'out' %}🍽️ 外食モード{% else %}🍳 自炊モード{% endif %}
+</div>
 <div class="quiz-container" id="quizApp">
 
   <!-- Loading state -->

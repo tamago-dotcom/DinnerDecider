@@ -2,6 +2,38 @@
 
 ---
 
+## [2026-04-08] 外食・自炊モード分岐機能
+
+### 単体テスト
+- app.py 構文チェック: ✅
+- database.py 構文チェック: ✅
+- ml_model.py 構文チェック: ✅
+- questions_data.py 構文チェック: ✅
+- GROUP_INFO: 全10グループ foods_out/foods_in 各4品: ✅
+- food_to_group: 既知料理・None・空文字・未登録料理: ✅
+- quiz_results: mode カラム存在（マイグレーション済み）: ✅
+- app.js: mode をペイロードに含めて送信: ✅
+- index.html: 外食・自炊 2ボタン: ✅
+- quiz.html: quizMode hidden input / mode-badge: ✅
+- result.html: mode-badge / openTabelog / tabelog URL / geo-note: ✅
+- history.html: mode-badge（外食/自炊）: ✅
+- style.css: .mode-buttons / .mode-badge / .geo-note スタイル: ✅
+
+### 結合テスト
+- GET /: 外食・自炊 2ボタンレンダリング: ✅
+- GET /quiz?mode=out: 外食モードバッジ / hidden input: ✅
+- GET /quiz?mode=in: 自炊モードバッジ / hidden input: ✅
+- POST /api/submit mode=out → result_id取得: ✅
+- GET /result/<id> (out): 外食モードバッジ / 食べログリンク: ✅
+- GET /result/<id> (in): 自炊モードバッジ / クックパッドリンク: ✅
+- 外食モード結果の料理がすべて foods_out リストに存在: ✅
+- GET /history: 200: ✅
+- GET /api/questions: 正常（既存機能）: ✅
+
+### 結果: 全通過（22/22）
+
+---
+
 ## [2026-04-08] PWA化（manifest.json / Service Worker / アイコン）
 
 ### 単体テスト

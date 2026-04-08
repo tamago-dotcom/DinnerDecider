@@ -153,6 +153,63 @@ img { max-width: 100%; }
 }
 
 /* ============================================================
+   Mode buttons (index) & Mode badge (quiz / result / history)
+   ============================================================ */
+.mode-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+@media (min-width: 480px) {
+  .mode-buttons {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.mode-badge {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.mode-badge--out {
+  background: #E8F4FD;
+  color: #2980B9;
+  border: 1px solid #AED6F1;
+}
+
+.mode-badge--in {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border: 1px solid var(--border);
+}
+
+.mode-badge--sm {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  margin-bottom: 0;
+  align-self: center;
+}
+
+.geo-note {
+  font-size: 0.8rem;
+  color: #2980B9;
+  background: #E8F4FD;
+  border: 1px solid #AED6F1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+/* ============================================================
    Hero (index page)
    ============================================================ */
 .hero {

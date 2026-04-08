@@ -25,6 +25,9 @@
           <p class="history-group-name">{{ r.group_name }}</p>
           <p class="history-date">{{ r.created_at }}</p>
         </div>
+        <span class="mode-badge mode-badge--sm {% if r.mode == 'out' %}mode-badge--out{% else %}mode-badge--in{% endif %}">
+          {% if r.mode == 'out' %}外食{% else %}自炊{% endif %}
+        </span>
       </div>
       <div class="history-foods">
         {% for food in r.foods[:2] %}
