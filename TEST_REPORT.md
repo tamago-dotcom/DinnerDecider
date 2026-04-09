@@ -2,6 +2,32 @@
 
 ---
 
+## [2026-04-09] 食べログ遷移の iOS Safari 対応修正
+
+### 単体テスト
+- app.py 構文チェック: ✅
+- database.py 構文チェック: ✅
+- ml_model.py 構文チェック: ✅
+- questions_data.py 構文チェック: ✅
+- openTabelog: window.open が除去されている: ✅
+- openTabelog: window.location.href で同タブ遷移: ✅
+- openTabelog: timeout: 5000 設定済み: ✅
+- openTabelog: maximumAge 設定済み: ✅
+- result.html: geoLoading オーバーレイ（現在地を取得中...）確認: ✅
+- openTabelog: ローディング表示・非表示ロジック確認: ✅
+- style.css: .geo-loading-overlay / .geo-loading-inner スタイル確認: ✅
+
+### 結合テスト
+- GET /result/<id> (out): geoLoading オーバーレイ描画確認: ✅
+- GET /result/<id> (out): openTabelog関数（window.location.href版）確認: ✅
+- GET /result/<id> (out): timeout: 5000 確認: ✅
+- GET /result/<id> (in): cookpadリンク確認（自炊モード正常）: ✅
+- GET / および GET /history: 正常: ✅
+
+### 結果: 全通過（16/16）
+
+---
+
 ## [2026-04-08] トップ画面の不要表示削除・自炊意向質問の除外
 
 ### 単体テスト
