@@ -21,6 +21,14 @@
     <p class="result-description">{{ group_info.description }}</p>
   </div>
 
+  <!-- Geolocation loading overlay (外食モード用) -->
+  <div id="geoLoading" class="geo-loading-overlay" style="display:none;" aria-live="polite">
+    <div class="geo-loading-inner">
+      <div class="spinner"></div>
+      <p>📍 現在地を取得中...</p>
+    </div>
+  </div>
+
   <!-- Food suggestions -->
   <section class="result-section">
     <h2 class="section-title">🍴 おすすめの夕食</h2>
@@ -171,24 +179,43 @@ new Chart(ctx, {
 });
 
 // 食べログ近くのお店を検索（外食モード用）
+// window.open() を非同期コールバック内で呼ぶと iOS Safari のポップアップ
+// ブロッカーに遮断されるため、同タブ遷移（window.location.href）を使用する。
 function openTabelog(foodName) {
   var encoded = encodeURIComponent(foodName);
   var fallbackUrl = 'https://tabelog.com/search/?sw=' + encoded;
+
+  // Geolocation 非対応ブラウザはすぐにフォールバック遷移
   if (!navigator.geolocation) {
-    window.open(fallbackUrl, '_blank');
+    window.location.href = fallbackUrl;
     return;
   }
+
+  // ローディングオーバーレイを表示
+  document.getElementById('geoLoading').style.display = 'flex';
+
+  var navigated = false;
+
+  function navigate(url) {
+    if (navigated) return;
+    navigated = true;
+    document.getElementById('geoLoading').style.display = 'none';
+    window.location.href = url;
+  }
+
   navigator.geolocation.getCurrentPosition(
+    // ③ 成功 → 現在地付きで遷移
     function(pos) {
       var url = 'https://tabelog.com/search/?sw=' + encoded
                + '&lat=' + pos.coords.latitude
                + '&lng=' + pos.coords.longitude;
-      window.open(url, '_blank');
+      navigate(url);
     },
+    // ④ 失敗・拒否 / ⑤ タイムアウト（5秒） → 現在地なしで遷移
     function() {
-      // 位置情報取得失敗時は料理名のみで検索
-      window.open(fallbackUrl, '_blank');
-    }
+      navigate(fallbackUrl);
+    },
+    { timeout: 5000, maximumAge: 300000 }
   );
 }
 </script>
