@@ -2,6 +2,30 @@
 
 ---
 
+## [2026-04-19] 食べログURL distance=3 パラメータ追加
+
+### 単体テスト
+- app.py 構文チェック: ✅
+- database.py 構文チェック: ✅
+- ml_model.py 構文チェック: ✅
+- questions_data.py 構文チェック: ✅
+- result.html: openTabelog 成功時URL に &distance=3 が含まれる: ✅
+- result.html: fallback URL（位置情報なし）は sw=料理名 のみ（distance なし）: ✅
+- result.html: sw=料理名 パラメータが存在する（fallback・成功時とも）: ✅
+- result.html: lat・lng パラメータが成功時URLに含まれる: ✅
+
+### 結合テスト
+- GET /result/<id> (out): openTabelog 関数の存在確認: ✅
+- GET /result/<id> (out): fallbackUrl = https://tabelog.com/search/?sw=<encoded> 確認: ✅
+- GET /result/<id> (out): 成功時URL = ?sw=&lat=&lng=&distance=3 確認: ✅
+- GET /result/<id> (out): geoLoading オーバーレイ描画確認: ✅
+- GET /result/<id> (in): 自炊モード正常（cookpad リンク）: ✅
+- GET / および GET /history: 正常: ✅
+
+### 結果: 全通過（14/14）
+
+---
+
 ## [2026-04-09] 食べログ遷移の iOS Safari 対応修正
 
 ### 単体テスト
