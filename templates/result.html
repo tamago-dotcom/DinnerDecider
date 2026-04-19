@@ -208,7 +208,8 @@ function openTabelog(foodName) {
     function(pos) {
       var url = 'https://tabelog.com/search/?sw=' + encoded
                + '&lat=' + pos.coords.latitude
-               + '&lng=' + pos.coords.longitude;
+               + '&lng=' + pos.coords.longitude
+               + '&distance=3';
       navigate(url);
     },
     // ④ 失敗・拒否 / ⑤ タイムアウト（5秒） → 現在地なしで遷移
