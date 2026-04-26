@@ -2,6 +2,34 @@
 
 ---
 
+## [2026-04-24] 食べログリンクを位置情報なしのシンプルURL方式に変更
+
+### 単体テスト
+- app.py 構文チェック: ✅
+- database.py 構文チェック: ✅
+- ml_model.py 構文チェック: ✅
+- questions_data.py 構文チェック: ✅
+- result.html: openTabelog 関数が削除されている: ✅
+- result.html: geoLoading オーバーレイが削除されている: ✅
+- result.html: geo-note が削除されている: ✅
+- result.html: 外食モードの food-card が tabelog.com/search/?sw=<food> の href を持つ: ✅
+- result.html: target="_blank" / rel="noopener noreferrer" 設定済み: ✅
+- style.css: .geo-note スタイルが削除されている: ✅
+- style.css: .geo-loading-overlay スタイルが削除されている: ✅
+- style.css: .geo-loading-inner スタイルが削除されている: ✅
+- style.css: .spinner / @keyframes spin が削除されている: ✅
+
+### 結合テスト
+- GET /result/<id> (out): tabelog.com/search/?sw=<food> リンク描画確認: ✅
+- GET /result/<id> (out): target="_blank" 確認: ✅
+- GET /result/<id> (out): geoLoading・geo-note 要素が存在しない: ✅
+- GET /result/<id> (in): クックパッドリンク正常（自炊モード影響なし）: ✅
+- GET / および GET /history: 正常: ✅
+
+### 結果: 全通過（18/18）
+
+---
+
 ## [2026-04-19] 食べログURL distance=3 パラメータ追加
 
 ### 単体テスト
